@@ -1,0 +1,83 @@
+name: release-checks
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  core:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            python: '3.10'
+          - os: ubuntu-latest
+            python: '3.12'
+          - os: windows-latest
+            python: '3.11'
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install '.[server,dev]'
+      - run: python -m pip check
+      - run: python -m unittest discover -s tests -v
+      - run: signova-ref demo --out demo_run
+      - run: python scripts/benchmark.py --out artifacts/benchmark.json --repeats 10
+      - run: python scripts/license_inventory.py --out artifacts/licenses.json
+      - run: python -m build
+      - run: python scripts/check_wheel.py --wheel dist/signova_reference_toolkit-0.1.0-py3-none-any.whl --out artifacts/wheel.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: core-${{ matrix.os }}-${{ matrix.python }}
+          path: |
+            artifacts/
+            demo_run/receipt.json
+            demo_run/evaluation.json
+  adapters:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: sudo apt-get update && sudo apt-get install -y libgl1 libglib2.0-0
+      - run: python -m pip install '.[server,dev,extract]' playwright
+      - run: python -m pip check
+      - run: python scripts/check_video_adapter.py --out artifacts/video_adapter.json
+      - run: python -m unittest discover -s tests -v
+      - run: signova-ref demo --out demo_run
+      - run: python -m playwright install --with-deps chromium
+      - name: Browser smoke
+        shell: bash
+        run: |
+          signova-ref serve --bank demo_run/bank --policy demo_run/policy.json --demo-root demo_run &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+          python -c "import time,urllib.request; exec('for i in range(50):\n try:\n  urllib.request.urlopen(\"http://127.0.0.1:8010/health\"); break\n except OSError: time.sleep(0.2)\nelse: raise RuntimeError(\"server unavailable\")')"
+          python scripts/check_browser.py --out artifacts/browser.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: adapter-browser
+          path: artifacts/
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install .
+      - run: signova-ref demo --out demo_run
+      - run: docker build -t signova-reference:ci .
+      - name: Container HTTP smoke
+        shell: bash
+        run: |
+          docker run -d --name signova-test -p 8010:8010 -v "$PWD/demo_run:/data:ro" signova-reference:ci
+          trap 'docker rm -f signova-test' EXIT
+          python -c "import time,urllib.request; exec('for i in range(60):\n try:\n  urllib.request.urlopen(\"http://127.0.0.1:8010/health\"); break\n except OSError: time.sleep(0.5)\nelse: raise RuntimeError(\"container unavailable\")')"
+          python -c "import json,urllib.request,pathlib; health=json.load(urllib.request.urlopen('http://127.0.0.1:8010/health')); assert health['status']=='ready' and not health['video_extraction']; pose=json.loads(pathlib.Path('demo_run/example_same.json').read_text()); req=urllib.request.Request('http://127.0.0.1:8010/compare',json.dumps({'target':'SYNTHETIC_HORIZONTAL','pose':pose}).encode(),{'Content-Type':'application/json'}); assert json.load(urllib.request.urlopen(req))['status']=='match'"

@@ -1,0 +1,6 @@
+include README.md REPRODUCE.md LICENSE THIRD_PARTY_NOTICES.md CITATION.cff CHANGELOG.md
+recursive-include docs *.md *.bib
+recursive-include tests *.py
+recursive-include scripts *.py *.ps1
+include Dockerfile .dockerignore
+recursive-include src/signova_reference *.html

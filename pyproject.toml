@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "signova-reference-toolkit"
+version = "0.1.0"
+description = "Audited pose reference banks and coherent geometric feedback for isolated sign practice"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md"]
+authors = [{name = "Nguyễn Trần Thiên Phúc"}]
+dependencies = ["numpy>=1.26,<3"]
+classifiers = ["Programming Language :: Python :: 3", "Operating System :: OS Independent", "Topic :: Scientific/Engineering"]
+
+[project.optional-dependencies]
+server = ["fastapi>=0.115,<1", "uvicorn>=0.30,<1", "python-multipart>=0.0.18,<1"]
+dev = ["httpx>=0.27,<1", "build>=1.2,<2"]
+extract = ["numpy>=1.26,<2", "mediapipe==0.10.14", "opencv-contrib-python>=4.8,<4.12", "jax>=0.4.30,<0.5", "jaxlib>=0.4.30,<0.5"]
+
+[project.scripts]
+signova-ref = "signova_reference.cli:main"
+
+[project.urls]
+Repository = "https://github.com/ntthienphuc/signova-reference-toolkit"
+Issues = "https://github.com/ntthienphuc/signova-reference-toolkit/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+signova_reference = ["web.html"]
