@@ -1,8 +1,10 @@
-# Signova Reference Toolkit
+# Pose Reference Toolkit
+
+[![CI](https://github.com/ntthienphuc/pose-reference-toolkit/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ntthienphuc/pose-reference-toolkit/actions/workflows/ci.yml)
 
 Build an audited reference bank from authorized video clips or precomputed poses, then compare one isolated practice attempt against a target gloss. The same selected reference and temporal alignment produce the score, joint feedback and web visualization.
 
-This is a reusable Python library, CLI and small local web demo. It is a new, independent implementation of reference-bank and comparison logic, separated from the older Signova application. It does not reproduce that application's coordinate/angular scores, classifier, account system or private reference dataset.
+This is a reusable Python library, CLI and small local web demo. It is a new, independent implementation of reference-bank and comparison logic, separated from the original practice application. It does not reproduce that application's coordinate/angular scores, classifier, account system or private reference dataset.
 
 **The output is geometric similarity under a declared configuration. It is not a validated sign-language proficiency grade.** The public fixtures are synthetic motions, not signs performed by people.
 
@@ -11,21 +13,21 @@ This is a reusable Python library, CLI and small local web demo. It is a new, in
 Python 3.10 or newer; the optional legacy MediaPipe video adapter is tested separately on Python 3.11.
 
 ```sh
-git clone https://github.com/ntthienphuc/signova-reference-toolkit.git
-cd signova-reference-toolkit
+git clone https://github.com/ntthienphuc/pose-reference-toolkit.git
+cd pose-reference-toolkit
 python -m venv .venv
 # Windows PowerShell:
 .venv\Scripts\Activate.ps1
 # Linux/macOS: source .venv/bin/activate
 python -m pip install -e ".[server,dev]"
-signova-ref demo --out demo_run
-signova-ref serve --bank demo_run/bank --policy demo_run/policy.json --demo-root demo_run
+pose-ref demo --out demo_run
+pose-ref serve --bank demo_run/bank --policy demo_run/policy.json --demo-root demo_run
 ```
 
 Open <http://127.0.0.1:8010>. Try the four synthetic examples: matching motion, different motion, missing hand tracking, and degenerate shoulder anchors. Upload a compatible pose JSON for your own test. The synthetic bank has six joints; a video-extracted 49-joint pose requires a separate matching bank.
 
 ```sh
-signova-ref compare --bank demo_run/bank --pose demo_run/example_same.json --target SYNTHETIC_HORIZONTAL --policy demo_run/policy.json
+pose-ref compare --bank demo_run/bank --pose demo_run/example_same.json --target SYNTHETIC_HORIZONTAL --policy demo_run/policy.json
 python -m unittest discover -s tests -v
 ```
 
@@ -48,20 +50,20 @@ This snippet shows one row; a build needs **2–64 accepted references per gloss
 ```sh
 # Use Python 3.11 for this optional adapter.
 python -m pip install -e ".[server,extract]"
-signova-ref audit --manifest collection/sources.json
-signova-ref build --manifest collection/sources.json --out collection/bank_v1
-signova-ref calibrate --manifest collection/sources.json --bank collection/bank_v1 --out collection/policy.json
-signova-ref evaluate --manifest collection/sources.json --bank collection/bank_v1 --policy collection/policy.json --out collection/evaluation.json
-signova-ref serve --bank collection/bank_v1 --policy collection/policy.json
+pose-ref audit --manifest collection/sources.json
+pose-ref build --manifest collection/sources.json --out collection/bank_v1
+pose-ref calibrate --manifest collection/sources.json --bank collection/bank_v1 --out collection/policy.json
+pose-ref evaluate --manifest collection/sources.json --bank collection/bank_v1 --policy collection/policy.json --out collection/evaluation.json
+pose-ref serve --bank collection/bank_v1 --policy collection/policy.json
 ```
 
-The server then accepts video uploads against this bank. Use `signova-ref extract --video clip.mp4 --out pose.json` to inspect extraction separately. The adapter uses MediaPipe Holistic, 49 uniquely named joints and frame-index/FPS timestamps; variable-frame-rate timing is not supported. Hand confidence is a detection-presence indicator, not a calibrated per-joint probability. See [data contracts](docs/CONTRACTS.md).
+The server then accepts video uploads against this bank. Use `pose-ref extract --video clip.mp4 --out pose.json` to inspect extraction separately. The adapter uses MediaPipe Holistic, 49 uniquely named joints and frame-index/FPS timestamps; variable-frame-rate timing is not supported. Hand confidence is a detection-presence indicator, not a calibrated per-joint probability. See [data contracts](docs/CONTRACTS.md).
 
 ## Python API
 
 ```python
-from signova_reference import ReferenceBank, compare
-from signova_reference.pose import load_pose
+from pose_reference import ReferenceBank, compare
+from pose_reference.pose import load_pose
 
 bank = ReferenceBank("demo_run/bank")
 result = compare(load_pose("demo_run/example_same.json"), bank, "SYNTHETIC_HORIZONTAL")
@@ -85,3 +87,7 @@ Reference import, MediaPipe extraction, pose distances and DTW have prior art. T
 Toolkit source and generated synthetic fixtures are MIT licensed, copyright Nguyễn Trần Thiên Phúc. Libraries retain their own licenses; [third-party notices](THIRD_PARTY_NOTICES.md) identifies direct dependencies. No private participant video, reference bank, model checkpoint, survey or application credential is redistributed. Public availability of a video does not establish permission to download, transform or redistribute it.
 
 This release is standalone software. It is not a published SoftwareX article. Citation metadata is in [CITATION.cff](CITATION.cff).
+
+## Migration from the initial prototype
+
+Version 0.1.1 uses the distribution `pose-reference-toolkit`, Python package `pose_reference`, and command `pose-ref`. Install it in a fresh environment and update imports and launch commands. Existing toolkit v1 JSON/NPZ bank schemas and comparison semantics are unchanged; no legacy import/CLI alias is installed. The previous release remains in history with its original assets. This naming change does not alter the separate original practice application.

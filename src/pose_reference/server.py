@@ -15,7 +15,7 @@ from . import __version__
 def create_app(bank_path, policy_path=None, demo_root=None):
     bank = ReferenceBank(bank_path)
     policy = load_policy(policy_path, bank) if policy_path else ComparePolicy()
-    app = FastAPI(title="Signova Reference Toolkit", version=__version__)
+    app = FastAPI(title="Pose Reference Toolkit", version=__version__)
     gate = asyncio.Semaphore(1)
     extraction = importlib.util.find_spec("mediapipe") is not None and importlib.util.find_spec("cv2") is not None
 
@@ -66,7 +66,7 @@ def create_app(bank_path, policy_path=None, demo_root=None):
             if not extraction:
                 raise HTTPException(503, "Install the extract extra to enable video input")
             async with gate:
-                with tempfile.TemporaryDirectory(prefix="signova-upload-") as directory:
+                with tempfile.TemporaryDirectory(prefix="pose-reference-upload-") as directory:
                     path = Path(directory) / "clip.mp4"
                     total = 0
                     with path.open("wb") as stream:

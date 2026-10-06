@@ -1,6 +1,6 @@
 # Software paper plan and evidence ledger
 
-Working title: **Signova Reference Toolkit: Auditable pose reference banks and coherent geometric feedback for isolated sign practice**.
+Working title: **Pose Reference Toolkit: Auditable pose reference banks and coherent geometric feedback for isolated sign practice**.
 
 This is a writing/evidence plan, not a submitted or accepted paper. Check the current [SoftwareX author guide](https://www.sciencedirect.com/journal/softwarex/publish/guide-for-authors) and template before submission. The guide page returned HTTP 403 during the 2026-10-06 inspection, so exact current word limits and mandatory metadata are not asserted here.
 

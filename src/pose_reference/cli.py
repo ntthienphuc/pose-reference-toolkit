@@ -3,6 +3,7 @@ import argparse
 import json
 from pathlib import Path
 import sys
+from . import __version__
 from .bank import ReferenceBank, audit_manifest, build_bank
 from .compare import ComparePolicy, compare
 from .evaluation import calibrate, diagnostics, load_policy
@@ -10,8 +11,8 @@ from .pose import load_pose, strict_json, write_json
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(prog="signova-ref", description=__doc__)
-    parser.add_argument("--version", action="version", version="%(prog)s 0.1.0")
+    parser = argparse.ArgumentParser(prog="pose-ref", description=__doc__)
+    parser.add_argument("--version", action="version", version="%(prog)s " + __version__)
     sub = parser.add_subparsers(dest="command", required=True)
     p = sub.add_parser("demo", help="Generate a synthetic bank, policy, queries and receipts")
     p.add_argument("--out", required=True)

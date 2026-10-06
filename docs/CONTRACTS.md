@@ -8,7 +8,7 @@ Joint names are ordered and unique. `pose_left_shoulder` and `pose_right_shoulde
 
 `coordinate_space` is `pixel_xy` or `cartesian_xy`. `mirror` is `unmirrored` or `mirrored`; there is no automatic handedness swapping. The query must exactly match the bank's contract. The video adapter assumes an unmirrored input; confirm capture settings before using that declaration.
 
-For NPZ import, store numeric `xy`, `confidence`, `timestamps_ms` arrays and a scalar Unicode `metadata` containing JSON for the remaining pose fields. Object arrays and pickle are refused. `.pose` files from pose-format are not directly accepted by v0.1.0; convert them with a separately validated mapping instead of assuming fixed joint offsets.
+For NPZ import, store numeric `xy`, `confidence`, `timestamps_ms` arrays and a scalar Unicode `metadata` containing JSON for the remaining pose fields. Object arrays and pickle are refused. `.pose` files from pose-format are not directly accepted by v0.1.1; convert them with a separately validated mapping instead of assuming fixed joint offsets.
 
 ## Source manifest v1
 

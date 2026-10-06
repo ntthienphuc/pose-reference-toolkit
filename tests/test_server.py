@@ -2,8 +2,8 @@ import tempfile
 from pathlib import Path
 import unittest
 from fastapi.testclient import TestClient
-from signova_reference.server import create_app
-from signova_reference.demo import create_demo, sequence
+from pose_reference.server import create_app
+from pose_reference.demo import create_demo, sequence
 
 
 class ServerTests(unittest.TestCase):
@@ -19,7 +19,7 @@ class ServerTests(unittest.TestCase):
 
     def test_index_health_and_bank(self):
         self.assertEqual(self.client.get("/").status_code, 200)
-        self.assertIn("Signova", self.client.get("/").text)
+        self.assertIn("Pose Reference", self.client.get("/").text)
         self.assertEqual(self.client.get("/health").json()["status"], "ready")
         doc = self.client.get("/bank").json()
         self.assertEqual(len(doc["glosses"]), 2)

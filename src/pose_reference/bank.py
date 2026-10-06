@@ -141,7 +141,7 @@ def build_bank(manifest_path, output, target_len=32, required_groups=("body", "l
         raise ValueError("Each gloss needs 2..64 accepted references: " + ", ".join(failures) + "; exclusions=" + json.dumps(excluded))
     indexes = required_indexes(contract, required_groups)
     output.parent.mkdir(parents=True, exist_ok=True)
-    temp = Path(tempfile.mkdtemp(prefix=".signova-build-", dir=output.parent))
+    temp = Path(tempfile.mkdtemp(prefix=".pose-reference-build-", dir=output.parent))
     try:
         profile = {"schema_version": 1, "contract": contract, "target_len": target_len, "required_groups": list(required_groups),
                    "quality": asdict(quality), "tolerance": {"quantile": tolerance_quantile, "floor": tolerance_floor,
@@ -173,7 +173,8 @@ def build_bank(manifest_path, output, target_len=32, required_groups=("body", "l
                             "tolerance_clipped_fraction": float((raw_tolerance[:, indexes] > tolerance_cap).mean()),
                             "minimum_required_cell_support": float(support[:, indexes].min())})
         from importlib.metadata import version
-        recipe = {"numpy": version("numpy"), "toolkit": "0.1.0", "pose_import": "explicit-json-or-nonpickled-npz-v1"}
+        from . import __version__
+        recipe = {"numpy": version("numpy"), "toolkit": __version__, "pose_import": "explicit-json-or-nonpickled-npz-v1"}
         if any(r["kind"] == "video" for r in references):
             recipe["video_adapter"] = {"mediapipe": version("mediapipe"), "opencv": version("opencv-contrib-python"),
                                        "frame_stride": 2, "model_complexity": 1, "timestamp": "frame-index-divided-by-fps",
@@ -190,7 +191,7 @@ def build_bank(manifest_path, output, target_len=32, required_groups=("body", "l
         temp.rename(output)
     finally:
         if temp.exists():
-            assert temp.resolve().parent == output.parent.resolve() and temp.name.startswith(".signova-build-")
+            assert temp.resolve().parent == output.parent.resolve() and temp.name.startswith(".pose-reference-build-")
             shutil.rmtree(temp)
     return {"status": "passed", "glosses": len(expected), "accepted_references": sum(len(v) for v in accepted.values()),
             "excluded_references": len(excluded), "bank_sha256": sha256(output / "manifest.json"), "audit": audit}

@@ -9,9 +9,9 @@ import statistics
 import tempfile
 import time
 import numpy as np
-from signova_reference.bank import ReferenceBank
-from signova_reference.compare import ComparePolicy, compare
-from signova_reference.demo import create_demo, sequence
+from pose_reference.bank import ReferenceBank
+from pose_reference.compare import ComparePolicy, compare
+from pose_reference.demo import create_demo, sequence
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--out", required=True)

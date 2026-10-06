@@ -5,19 +5,19 @@ Use a fresh checkout and environment. Keep generated data and receipts outside v
 ```sh
 python -m pip install -e ".[server,dev]"
 python -m unittest discover -s tests -v
-signova-ref demo --out demo_run
-signova-ref inspect --bank demo_run/bank
-signova-ref evaluate --bank demo_run/bank --manifest demo_run/sources.json --policy demo_run/policy.json --out artifacts/evaluation.json
+pose-ref demo --out demo_run
+pose-ref inspect --bank demo_run/bank
+pose-ref evaluate --bank demo_run/bank --manifest demo_run/sources.json --policy demo_run/policy.json --out artifacts/evaluation.json
 python scripts/benchmark.py --out artifacts/benchmark.json --repeats 30
 python scripts/license_inventory.py --out artifacts/installed_licenses.json
 python -m pip freeze > artifacts/environment.txt
 python -m build
-python scripts/check_wheel.py --wheel dist/signova_reference_toolkit-0.1.0-py3-none-any.whl --out artifacts/wheel.json
+python scripts/check_wheel.py --wheel dist/pose_reference_toolkit-0.1.1-py3-none-any.whl --out artifacts/wheel.json
 ```
 
 Create `artifacts` before writing shell redirections or custom output files. `demo` and receipt outputs refuse existing paths; use a new directory for a second run. Bank and manifest hashes can differ with NumPy version or binary ZIP writer details; compare semantic outcomes and source/artifact receipts within the declared environment, rather than claiming byte-identical artifacts across platforms.
 
-To verify the actual browser, start `signova-ref serve --bank demo_run/bank --policy demo_run/policy.json --demo-root demo_run`, then in another terminal:
+To verify the actual browser, start `pose-ref serve --bank demo_run/bank --policy demo_run/policy.json --demo-root demo_run`, then in another terminal:
 
 ```sh
 python -m pip install playwright
@@ -43,8 +43,8 @@ GitHub Actions runs core checks on Linux and Windows, packaging/source verificat
 Container demo (generate `demo_run` on the host first):
 
 ```sh
-docker build -t signova-reference:0.1.0 .
-docker run --rm -p 8010:8010 -v "ABSOLUTE_DEMO_FOLDER:/data:ro" signova-reference:0.1.0
+docker build -t pose-reference:0.1.1 .
+docker run --rm -p 8010:8010 -v "ABSOLUTE_DEMO_FOLDER:/data:ro" pose-reference:0.1.1
 ```
 
-The base container contains the server extra, not MediaPipe. It supports compatible pose uploads and generated synthetic fixtures. Bank folders created from an atomic temporary directory are private to their creating OS user. On Linux, add `--user "$(id -u):$(id -g)"` to run with the host bank owner's UID/GID; do not expose a real private bank to all users just to work around mount permissions. The default image user is `signova` (UID 1000). Windows Docker mount permissions differ; verify `/health` with the intended host mount. CI verifies the Linux host-UID configuration.
+The base container contains the server extra, not MediaPipe. It supports compatible pose uploads and generated synthetic fixtures. Bank folders created from an atomic temporary directory are private to their creating OS user. On Linux, add `--user "$(id -u):$(id -g)"` to run with the host bank owner's UID/GID; do not expose a real private bank to all users just to work around mount permissions. The default image user is `pose_reference` (UID 1000). Windows Docker mount permissions differ; verify `/health` with the intended host mount. CI verifies the Linux host-UID configuration.

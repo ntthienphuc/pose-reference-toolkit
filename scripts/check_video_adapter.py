@@ -5,8 +5,8 @@ from pathlib import Path
 import tempfile
 import cv2
 import numpy as np
-from signova_reference.video import extract_video, NAMES, GROUPS
-from signova_reference.pose import prepare_pose
+from pose_reference.video import extract_video, NAMES, GROUPS
+from pose_reference.pose import prepare_pose
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--out", required=True)

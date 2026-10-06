@@ -7,13 +7,13 @@ import shutil
 import tempfile
 import unittest
 import numpy as np
-from signova_reference.pose import PoseSequence, QualityConfig, prepare_pose, strict_json, write_json, load_pose
-from signova_reference.demo import sequence, create_demo, NAMES, GROUPS
-from signova_reference.bank import ReferenceBank, audit_manifest, build_bank, sha256
-from signova_reference.compare import ComparePolicy, compare, match_template
-from signova_reference.alignment import align
-from signova_reference.evaluation import diagnostics, calibrate, load_policy
-from signova_reference.cli import main
+from pose_reference.pose import PoseSequence, QualityConfig, prepare_pose, strict_json, write_json, load_pose
+from pose_reference.demo import sequence, create_demo, NAMES, GROUPS
+from pose_reference.bank import ReferenceBank, audit_manifest, build_bank, sha256
+from pose_reference.compare import ComparePolicy, compare, match_template
+from pose_reference.alignment import align
+from pose_reference.evaluation import diagnostics, calibrate, load_policy
+from pose_reference.cli import main
 
 
 def changed(seq=None, **kwargs):

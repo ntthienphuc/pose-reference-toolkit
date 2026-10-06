@@ -2,7 +2,7 @@
 
 Targeted review, 2026-10-06. This is not an exhaustive novelty search. Code features below are based on the linked repositories/papers, not reproduced competitor benchmarks. No source from these projects is vendored or copied into this toolkit.
 
-| Work | Relevant overlap | Signova's proposed emphasis |
+| Work | Relevant overlap | Pose Reference's proposed emphasis |
 |---|---|---|
 | [MediaPipe–DTW sign recognition](https://github.com/gabguerin/Sign-Language-Recognition--MediaPipe-DTW) | Imports reference videos, extracts hand-angle features, applies DTW and voting. `yt_download.py` automatically obtains/cuts source clips. | Audited, explicitly permission-declared bank construction; role separation; complete-exemplar feedback receipts; recapture versus similarity outcomes. Existing-video reference import is **not** a new idea. |
 | [pose-evaluation](https://github.com/sign-language-processing/pose-evaluation), [Jiang et al., WMT 2025](https://aclanthology.org/2025.wmt-1.4/) | Reusable sign-pose metrics, DTW processing, missing-keypoint handling and varying pose lengths/formats; paper evaluates retrieval and human correlation. | Bank lifecycle plus target-practice decision/visualization tied to one selected exemplar. Do not claim pose comparison or missing-data processing is original, or equal human-validation evidence. |
@@ -14,7 +14,7 @@ Repository snapshots inspected: gabguerin `68948d87b1e57c3af41f5116728b3d264d683
 
 ## Defensible contribution statement
 
-“Signova Reference Toolkit provides an auditable workflow for constructing pose reference banks from authorized sources and producing quality-aware, complete-exemplar geometric feedback for isolated practice attempts. Source roles, pose contracts, bank assets, decision policies and selected alignment are exposed as inspectable artifacts through a reusable Python API, CLI and web adapter.”
+“Pose Reference Toolkit provides an auditable workflow for constructing pose reference banks from authorized sources and producing quality-aware, complete-exemplar geometric feedback for isolated practice attempts. Source roles, pose contracts, bank assets, decision policies and selected alignment are exposed as inspectable artifacts through a reusable Python API, CLI and web adapter.”
 
 Do not describe the software as the first automatic sign tutor, the first reference-video scorer, a novel DTW algorithm, or a validated substitute for sign-language instructors. The useful distinction is the combination of bank construction, coherent comparison and verifiable outcomes in a reusable release; whether that is sufficiently original for a journal is an editorial/reviewer judgment.
 
