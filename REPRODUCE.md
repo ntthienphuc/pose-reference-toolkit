@@ -47,4 +47,4 @@ docker build -t signova-reference:0.1.0 .
 docker run --rm -p 8010:8010 -v "ABSOLUTE_DEMO_FOLDER:/data:ro" signova-reference:0.1.0
 ```
 
-The base container contains the server extra, not MediaPipe. It supports compatible pose uploads and generated synthetic fixtures.
+The base container contains the server extra, not MediaPipe. It supports compatible pose uploads and generated synthetic fixtures. Bank folders created from an atomic temporary directory are private to their creating OS user. On Linux, add `--user "$(id -u):$(id -g)"` to run with the host bank owner's UID/GID; do not expose a real private bank to all users just to work around mount permissions. The default image user is `signova` (UID 1000). Windows Docker mount permissions differ; verify `/health` with the intended host mount. CI verifies the Linux host-UID configuration.

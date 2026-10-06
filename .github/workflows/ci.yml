@@ -77,7 +77,7 @@ jobs:
       - name: Container HTTP smoke
         shell: bash
         run: |
-          docker run -d --name signova-test -p 8010:8010 -v "$PWD/demo_run:/data:ro" signova-reference:ci
-          trap 'docker rm -f signova-test' EXIT
+          docker run -d --name signova-test --user "$(id -u):$(id -g)" -p 8010:8010 -v "$PWD/demo_run:/data:ro" signova-reference:ci
+          trap 'docker logs signova-test; docker rm -f signova-test' EXIT
           python -c "import time,urllib.request; exec('for i in range(60):\n try:\n  urllib.request.urlopen(\"http://127.0.0.1:8010/health\"); break\n except OSError: time.sleep(0.5)\nelse: raise RuntimeError(\"container unavailable\")')"
           python -c "import json,urllib.request,pathlib; health=json.load(urllib.request.urlopen('http://127.0.0.1:8010/health')); assert health['status']=='ready' and not health['video_extraction']; pose=json.loads(pathlib.Path('demo_run/example_same.json').read_text()); req=urllib.request.Request('http://127.0.0.1:8010/compare',json.dumps({'target':'SYNTHETIC_HORIZONTAL','pose':pose}).encode(),{'Content-Type':'application/json'}); assert json.load(urllib.request.urlopen(req))['status']=='match'"
