@@ -1,4 +1,4 @@
-include README.md REPRODUCE.md LICENSE THIRD_PARTY_NOTICES.md CITATION.cff CHANGELOG.md
+include README.md REPRODUCE.md LICENSE Licence.txt THIRD_PARTY_NOTICES.md CITATION.cff CHANGELOG.md
 recursive-include docs *.md *.bib
 recursive-include tests *.py
 recursive-include scripts *.py *.ps1

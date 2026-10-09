@@ -315,6 +315,59 @@ class BankTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "does not match"):
             load_policy(self.root / "bad_policy.json", self.bank)
 
+    def test_failed_evaluation_sample_remains_in_rate_denominators(self):
+        row = next(row for row in self.doc["samples"] if row["role"] == "evaluation")
+        (self.root / row["path"]).write_text("{broken pose", encoding="utf-8")
+        report = diagnostics(self.manifest, self.bank, "evaluation")
+        self.assertEqual((report["samples"], report["comparisons"]), (4, 8))
+        self.assertEqual((report["positive_pairs"], report["negative_pairs"]), (4, 4))
+        self.assertEqual(report["true_match_rate"], 0.75)
+        self.assertEqual(report["conditional_true_match_rate"], 1.0)
+        self.assertEqual(report["sample_coverage"], 0.75)
+        self.assertEqual(report["comparison_coverage"], 0.75)
+        self.assertEqual(report["sample_status_counts"]["reject"], 1)
+        self.assertEqual(report["comparison_status_counts"]["reject"], 2)
+        failed = [case for case in report["cases"] if case["sample_id"] == row["id"]]
+        self.assertEqual(len(failed), len(self.bank.entries))
+        self.assertTrue(all(case["reasons"] == ["sample_read_error"] for case in failed))
+
+    def test_all_failed_evaluation_has_zero_coverage_and_no_conditional_rate(self):
+        for index, row in enumerate(self.doc["samples"]):
+            if row["role"] == "evaluation":
+                (self.root / row["path"]).write_text("invalid pose " + str(index), encoding="utf-8")
+        report = diagnostics(self.manifest, self.bank, "evaluation")
+        self.assertEqual(report["true_match_rate"], 0)
+        self.assertEqual(report["false_match_rate"], 0)
+        self.assertEqual(report["sample_coverage"], 0)
+        self.assertEqual(report["scored_comparisons"], 0)
+        self.assertIsNone(report["conditional_true_match_rate"])
+        self.assertIsNone(report["conditional_false_match_rate"])
+        self.assertEqual(report["sample_status_counts"]["reject"], 4)
+
+    def test_calibration_reports_unscored_inputs(self):
+        row = next(row for row in self.doc["samples"] if row["role"] == "calibration")
+        (self.root / row["path"]).write_text("invalid calibration pose", encoding="utf-8")
+        receipt = calibrate(self.manifest, self.bank)
+        self.assertEqual(receipt["calibration_total_samples"], 4)
+        self.assertEqual(receipt["calibration_scored_samples"], 3)
+        self.assertEqual(receipt["calibration_sample_coverage"], 0.75)
+        self.assertEqual({case["sample_id"] for case in receipt["calibration_exclusions"]}, {row["id"]})
+
+    def test_diagnostics_use_receipt_policy_and_reject_explicit_mismatch(self):
+        receipt = strict_json((self.root / "policy.json").read_text(encoding="utf-8"))
+        report = diagnostics(self.manifest, self.bank, "evaluation", calibration_receipt=receipt)
+        self.assertEqual(report["policy"], receipt["policy"])
+        wrong = ComparePolicy(min_score=1)
+        with self.assertRaisesRegex(ValueError, "differs from its calibration receipt"):
+            diagnostics(self.manifest, self.bank, "evaluation", wrong, receipt)
+
+    def test_calibration_provenance_must_be_explicit_lists(self):
+        receipt = strict_json((self.root / "policy.json").read_text(encoding="utf-8"))
+        receipt["source_groups"] = "capture_01"
+        write_json(self.root / "invalid_policy.json", receipt)
+        with self.assertRaisesRegex(ValueError, "Invalid calibration provenance"):
+            load_policy(self.root / "invalid_policy.json", self.bank)
+
     def test_cli_failure_preserves_output(self):
         output = self.root / "bank"
         with contextlib.redirect_stderr(io.StringIO()):

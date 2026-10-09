@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.2 — 2026-10-09
+
+- Keep unreadable evaluation inputs in every requested sample-target comparison and rate denominator; report scoring coverage and conditional rates explicitly.
+- Separate unique-sample status counts from comparison status counts, and include unscored calibration inputs in policy receipts.
+- Use the calibration receipt's policy in the diagnostics API and reject an explicitly conflicting policy or malformed provenance lists.
+- Add regression cases for partial/all-input extraction failure, calibration exclusions and policy mismatch.
+- Include the SoftwareX-named `Licence.txt` alongside the identical `LICENSE` and verify their synchronization during wheel checks.
+- Document the C1–C8 software metadata, repository support channel and outstanding manuscript contact field.
+
 ## 0.1.1 — 2026-10-06
 
 - Rename the product and repository to Pose Reference Toolkit.

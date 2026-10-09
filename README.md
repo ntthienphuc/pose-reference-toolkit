@@ -72,6 +72,8 @@ print(result["status"], result["score"], result.get("matched_reference_id"))
 
 The default policy is explicitly heuristic. `linear` alignment is the default; `dtw` uses one bounded, shared path for all required joints. Policies calibrated for one alignment must not be transferred to another without validation.
 
+Evaluation reports retain unreadable/recapture inputs, expose scoring coverage and distinguish all-pair rates from rates conditional on obtaining a score. Report coverage with target-match rates; a system that rejects every input can have zero false matches. See the [diagnostic definitions](docs/METHOD.md#diagnostic-denominators-and-coverage).
+
 ## What the toolkit adds
 
 - Manifest-based reference construction, explicit names/groups/mirror contract, source hashes, inclusion/exclusion reports, immutable versioned bank outputs.
@@ -86,7 +88,7 @@ Reference import, MediaPipe extraction, pose distances and DTW have prior art. T
 
 Toolkit source and generated synthetic fixtures are MIT licensed, copyright Nguyễn Trần Thiên Phúc. Libraries retain their own licenses; [third-party notices](THIRD_PARTY_NOTICES.md) identifies direct dependencies. No private participant video, reference bank, model checkpoint, survey or application credential is redistributed. Public availability of a video does not establish permission to download, transform or redistribute it.
 
-This release is standalone software. It is not a published SoftwareX article. Citation metadata is in [CITATION.cff](CITATION.cff).
+This release is standalone software. It is not a published SoftwareX article. Citation metadata is in [CITATION.cff](CITATION.cff); the [C1–C8 software metadata](docs/SOFTWARE_METADATA.md) records version, license, dependencies, documentation and support.
 
 ## Migration from the initial prototype
 

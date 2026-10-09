@@ -30,7 +30,7 @@ jobs:
       - run: python scripts/benchmark.py --out artifacts/benchmark.json --repeats 10
       - run: python scripts/license_inventory.py --out artifacts/licenses.json
       - run: python -m build
-      - run: python scripts/check_wheel.py --wheel dist/pose_reference_toolkit-0.1.1-py3-none-any.whl --out artifacts/wheel.json
+      - run: python scripts/check_wheel.py --wheel dist/pose_reference_toolkit-0.1.2-py3-none-any.whl --out artifacts/wheel.json
       - uses: actions/upload-artifact@v4
         with:
           name: core-${{ matrix.os }}-${{ matrix.python }}

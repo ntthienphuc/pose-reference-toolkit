@@ -12,7 +12,7 @@ python scripts/benchmark.py --out artifacts/benchmark.json --repeats 30
 python scripts/license_inventory.py --out artifacts/installed_licenses.json
 python -m pip freeze > artifacts/environment.txt
 python -m build
-python scripts/check_wheel.py --wheel dist/pose_reference_toolkit-0.1.1-py3-none-any.whl --out artifacts/wheel.json
+python scripts/check_wheel.py --wheel dist/pose_reference_toolkit-0.1.2-py3-none-any.whl --out artifacts/wheel.json
 ```
 
 Create `artifacts` before writing shell redirections or custom output files. `demo` and receipt outputs refuse existing paths; use a new directory for a second run. Bank and manifest hashes can differ with NumPy version or binary ZIP writer details; compare semantic outcomes and source/artifact receipts within the declared environment, rather than claiming byte-identical artifacts across platforms.
@@ -43,8 +43,8 @@ GitHub Actions runs core checks on Linux and Windows, packaging/source verificat
 Container demo (generate `demo_run` on the host first):
 
 ```sh
-docker build -t pose-reference:0.1.1 .
-docker run --rm -p 8010:8010 -v "ABSOLUTE_DEMO_FOLDER:/data:ro" pose-reference:0.1.1
+docker build -t pose-reference:0.1.2 .
+docker run --rm -p 8010:8010 -v "ABSOLUTE_DEMO_FOLDER:/data:ro" pose-reference:0.1.2
 ```
 
 The base container contains the server extra, not MediaPipe. It supports compatible pose uploads and generated synthetic fixtures. Bank folders created from an atomic temporary directory are private to their creating OS user. On Linux, add `--user "$(id -u):$(id -g)"` to run with the host bank owner's UID/GID; do not expose a real private bank to all users just to work around mount permissions. The default image user is `pose_reference` (UID 1000). Windows Docker mount permissions differ; verify `/health` with the intended host mount. CI verifies the Linux host-UID configuration.
