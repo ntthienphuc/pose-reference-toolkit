@@ -1,5 +1,5 @@
 include README.md REPRODUCE.md LICENSE Licence.txt THIRD_PARTY_NOTICES.md CITATION.cff CHANGELOG.md
-recursive-include docs *.md *.bib
+recursive-include docs *.md *.bib *.svg *.png
 recursive-include tests *.py
 recursive-include scripts *.py *.ps1
 include Dockerfile .dockerignore

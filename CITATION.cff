@@ -2,8 +2,8 @@ cff-version: 1.2.0
 message: "If you use this software, cite this version and its repository."
 type: software
 title: "Pose Reference Toolkit"
-version: 0.1.2
-date-released: 2026-10-09
+version: 0.1.3
+date-released: 2026-10-11
 authors:
   - family-names: "Nguyễn"
     given-names: "Trần Thiên Phúc"

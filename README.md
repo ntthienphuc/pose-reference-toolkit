@@ -1,16 +1,46 @@
+![Pose Reference Toolkit](docs/assets/pose-reference-banner.svg)
+
 # Pose Reference Toolkit
 
 [![CI](https://github.com/ntthienphuc/pose-reference-toolkit/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ntthienphuc/pose-reference-toolkit/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/ntthienphuc/pose-reference-toolkit)](https://github.com/ntthienphuc/pose-reference-toolkit/releases)
+[![MIT license](https://img.shields.io/badge/license-MIT-teal)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue)](pyproject.toml)
 
-Build an audited reference bank from authorized video clips or precomputed poses, then compare one isolated practice attempt against a target gloss. The same selected reference and temporal alignment produce the score, joint feedback and web visualization.
+**Turn a permitted reference collection into a reusable pose comparison workflow.** Build a bank from video or named-joint poses, compare an isolated attempt, inspect where it differs, and save the complete result for review.
 
-This is a reusable Python library, CLI and small local web demo. It is a new, independent implementation of reference-bank and comparison logic, separated from the original practice application. It does not reproduce that application's coordinate/angular scores, classifier, account system or private reference dataset.
+[Quick start](#quick-start) · [Your collection](#use-your-own-collection) · [Python API](#python-api) · [Reproduce](REPRODUCE.md) · [Method](docs/METHOD.md) · [Paper evidence](docs/SOFTWAREX_POSITIONING.md)
 
-**The output is geometric similarity under a declared configuration. It is not a validated sign-language proficiency grade.** The public fixtures are synthetic motions, not signs performed by people.
+## What you can build
+
+A Python library and CLI for developers who need reference-based motion comparison without training a recognizer for each collection. A small local web demo shows how to integrate the same bank, policy and comparison API into an upload-and-review application.
+
+```mermaid
+flowchart LR
+    A[Permitted videos or named-joint poses] --> B[Audit source manifest and roles]
+    B --> C[Build versioned reference bank]
+    C --> D[Calibrate comparison policy]
+    E[One isolated attempt] --> F[Check quality and normalize]
+    D --> G[Select whole reference and align]
+    F --> G
+    G --> H[Outcome and component feedback]
+    H --> I[Web review and full JSON receipt]
+    D --> J[Held-out evaluation with coverage]
+```
+
+| Task | Toolkit output |
+|---|---|
+| Curate an existing collection | Accepted/excluded source report, hashes, role-overlap checks, versioned bank |
+| Compare an attempt | Selected complete exemplar, linear or bounded-DTW alignment, target/alternative margin |
+| Inspect the comparison | Aligned pose overlay, per-joint/group discrepancy and downloadable full receipt |
+| Handle uncertain inputs | `low_similarity`, `inconclusive`, `needs_recapture` or `reject`, with reasons |
+| Assess an operating policy | Bank-bound calibration and evaluation retaining failures and scoring coverage |
+
+**Scores describe 2D geometric similarity under the declared configuration.** They are not validated sign-language proficiency grades. Public example motions are synthetic; natural sign matching and educational benefit remain unevaluated.
 
 ## Quick start
 
-Python 3.10 or newer; the optional legacy MediaPipe video adapter is tested separately on Python 3.11.
+Python 3.10 or newer for the core/server. Use Python 3.11 for the separately tested optional video adapter.
 
 ```sh
 git clone https://github.com/ntthienphuc/pose-reference-toolkit.git
@@ -24,18 +54,22 @@ pose-ref demo --out demo_run
 pose-ref serve --bank demo_run/bank --policy demo_run/policy.json --demo-root demo_run
 ```
 
-Open <http://127.0.0.1:8010>. Try the four synthetic examples: matching motion, different motion, missing hand tracking, and degenerate shoulder anchors. Upload a compatible pose JSON for your own test. The synthetic bank has six joints; a video-extracted 49-joint pose requires a separate matching bank.
+Open <http://127.0.0.1:8010>. Try **matching motion**, **different motion**, **missing tracking** and **degenerate anchors**. Move the alignment slider, inspect the overlay, then select **Download full receipt JSON** to retain the exact comparison including its path and reference identity.
+
+![Local demo showing an aligned synthetic pose comparison](docs/assets/demo-synthetic.png)
+
+*Screenshot of the generated synthetic demo; this is an engineering example, not a person performing a sign.*
 
 ```sh
 pose-ref compare --bank demo_run/bank --pose demo_run/example_same.json --target SYNTHETIC_HORIZONTAL --policy demo_run/policy.json
 python -m unittest discover -s tests -v
 ```
 
-The demo generates 16 independent synthetic files with declared reference/calibration/evaluation roles, builds eight references for two motion classes, calibrates on four files and evaluates on the other four. Generated rates verify the engineered fixture only. They are not VSL recognition or learner-assessment results.
+The demo creates 16 synthetic files: eight references, four calibration files and four evaluation files across two motion classes. It deliberately exercises successful, different-motion and unusable-input outcomes. Its rates describe that fixture only. Use a new output directory when repeating a run.
 
-## Own reference collection
+## Use your own collection
 
-Supply pretrimmed, single-attempt clips with confirmed labels and permission. Keep reference, calibration and evaluation acquisition groups separate. A source-group ID is not automatically a verified signer identity.
+Supply deliberately trimmed single-attempt clips or compatible pose JSON files, confirmed labels and documented permission. A manifest row looks like this:
 
 ```json
 {"schema_version": 1, "samples": [
@@ -45,10 +79,10 @@ Supply pretrimmed, single-attempt clips with confirmed labels and permission. Ke
 ]}
 ```
 
-This snippet shows one row; a build needs **2–64 accepted references per gloss**. Add disjoint `calibration` and `evaluation` rows before fitting and assessing policy thresholds. Paths resolve within the manifest folder. No automatic internet download or claim of rights verification is provided.
+This is a schema example, not permission to use a dataset. A build needs **2–64 accepted references per gloss**, so supply multiple reference rows. Add disjoint `calibration` and `evaluation` rows to fit and assess thresholds. Paths resolve within the manifest directory. A declared source group is not a verified signer identity.
 
 ```sh
-# Use Python 3.11 for this optional adapter.
+# Optional extraction adapter: Python 3.11 with supported platform wheels.
 python -m pip install -e ".[server,extract]"
 pose-ref audit --manifest collection/sources.json
 pose-ref build --manifest collection/sources.json --out collection/bank_v1
@@ -57,39 +91,46 @@ pose-ref evaluate --manifest collection/sources.json --bank collection/bank_v1 -
 pose-ref serve --bank collection/bank_v1 --policy collection/policy.json
 ```
 
-The server then accepts video uploads against this bank. Use `pose-ref extract --video clip.mp4 --out pose.json` to inspect extraction separately. The adapter uses MediaPipe Holistic, 49 uniquely named joints and frame-index/FPS timestamps; variable-frame-rate timing is not supported. Hand confidence is a detection-presence indicator, not a calibrated per-joint probability. See [data contracts](docs/CONTRACTS.md).
+The optional MediaPipe Holistic adapter produces 49 named joints with frame-index/FPS timestamps and assumes constant frame rate. The six-joint synthetic bank has a different contract: extracted videos require a bank built from compatible poses. Hand confidence indicates detection presence, not a calibrated joint probability. See [contracts](docs/CONTRACTS.md) and [real-case protocol](docs/CASE_STUDY_PROTOCOL.md).
 
 ## Python API
 
 ```python
 from pose_reference import ReferenceBank, compare
 from pose_reference.pose import load_pose
+from pose_reference.evaluation import load_policy
 
 bank = ReferenceBank("demo_run/bank")
-result = compare(load_pose("demo_run/example_same.json"), bank, "SYNTHETIC_HORIZONTAL")
+policy = load_policy("demo_run/policy.json", bank)
+result = compare(load_pose("demo_run/example_same.json"),
+                 bank, "SYNTHETIC_HORIZONTAL", policy)
 print(result["status"], result["score"], result.get("matched_reference_id"))
 ```
 
-The default policy is explicitly heuristic. `linear` alignment is the default; `dtw` uses one bounded, shared path for all required joints. Policies calibrated for one alignment must not be transferred to another without validation.
+`linear` is the default alignment. Bounded `dtw` uses one path shared across required joints. Both select a complete reference exemplar: the displayed reference and feedback explain the same comparison that produced the score. A policy fitted for one alignment must be recalibrated before use with another.
 
-Evaluation reports retain unreadable/recapture inputs, expose scoring coverage and distinguish all-pair rates from rates conditional on obtaining a score. Report coverage with target-match rates; a system that rejects every input can have zero false matches. See the [diagnostic definitions](docs/METHOD.md#diagnostic-denominators-and-coverage).
+## Evidence and contribution
 
-## What the toolkit adds
+The contribution is an integrated **reference-bank lifecycle, coherent temporal comparison and inspectable assessment workflow**. Extraction, normalization, DTW and educational feedback have prior art. [The comparison with actual related implementations](docs/RELATED_WORK.md) explains that overlap; [positioning](docs/SOFTWAREX_POSITIONING.md) defines the supported contribution and remaining experiments.
 
-- Manifest-based reference construction, explicit names/groups/mirror contract, source hashes, inclusion/exclusion reports, immutable versioned bank outputs.
-- Checks for duplicate bytes and canonical pose content, source-group and declared verified-signer overlap across roles; additional guards against overlap with deployed references and calibration samples during evaluation.
-- Quality gates before scoring; missing observations remain unknown during adjacent-frame resampling and count against the score's fixed required-cell denominator.
-- Whole-reference selection and one alignment path for scoring and feedback; no minimum independently selected across different exemplars at each joint/frame.
-- Explicit `match`, `low_similarity`, `inconclusive`, `needs_recapture` and `reject` outcomes with JSON receipts, plus a standalone browser adapter.
+| Available evidence | Practical boundary |
+|---|---|
+| Synthetic outcomes and regression cases | Tested behavior on constructed motions; no natural-sign accuracy claim |
+| API/HTTP tests and real Chromium checks | Interface behavior, complete receipt downloads and mobile layout |
+| Built-wheel/source checks and CI | Packaging and installation checks for the tested environments |
+| Fixed-fixture host timing script | Comparison time only; no extraction/network or scale-up claim |
+| Real-data evaluation tooling | Implemented; an authorized natural-data study is still needed |
 
-Reference import, MediaPipe extraction, pose distances and DTW have prior art. The proposed software contribution is this auditable workflow and its tested behavior. See [related work](docs/RELATED_WORK.md), [method](docs/METHOD.md), [reproduction](REPRODUCE.md), [limitations](docs/LIMITATIONS.md) and [paper plan](docs/SOFTWAREX_PLAN.md).
+Evaluation retains unreadable and recapture inputs and distinguishes all-pair rates from rates conditional on a score. Report both with coverage; zero false matches alone can conceal a system that scores nothing. See [metric denominators](docs/METHOD.md#diagnostic-denominators-and-coverage).
 
-## Distribution and rights
+## Documentation and reuse
 
-Toolkit source and generated synthetic fixtures are MIT licensed, copyright Nguyễn Trần Thiên Phúc. Libraries retain their own licenses; [third-party notices](THIRD_PARTY_NOTICES.md) identifies direct dependencies. No private participant video, reference bank, model checkpoint, survey or application credential is redistributed. Public availability of a video does not establish permission to download, transform or redistribute it.
+[Reproduction](REPRODUCE.md) · [Data contracts](docs/CONTRACTS.md) · [Method](docs/METHOD.md) · [Limitations](docs/LIMITATIONS.md) · [Related work](docs/RELATED_WORK.md) · [Case-study protocol](docs/CASE_STUDY_PROTOCOL.md) · [Software metadata](docs/SOFTWARE_METADATA.md) · [Contributing](CONTRIBUTING.md)
 
-This release is standalone software. It is not a published SoftwareX article. Citation metadata is in [CITATION.cff](CITATION.cff); the [C1–C8 software metadata](docs/SOFTWARE_METADATA.md) records version, license, dependencies, documentation and support.
+The web server is a local demonstration, with temporary server-side uploads and no production authentication. This is a standalone software release, not a published SoftwareX article. Cite the version using [CITATION.cff](CITATION.cff), and report issues through [GitHub Issues](https://github.com/ntthienphuc/pose-reference-toolkit/issues).
 
-## Migration from the initial prototype
+## License and provenance
 
-Version 0.1.1 uses the distribution `pose-reference-toolkit`, Python package `pose_reference`, and command `pose-ref`. Install it in a fresh environment and update imports and launch commands. Existing toolkit v1 JSON/NPZ bank schemas and comparison semantics are unchanged; no legacy import/CLI alias is installed. The previous release remains in history with its original assets. This naming change does not alter the separate original practice application.
+Toolkit source and generated synthetic fixtures are **MIT licensed**, copyright Nguyễn Trần Thiên Phúc. Dependencies retain their own terms; see [third-party notices](THIRD_PARTY_NOTICES.md). No private participant videos, banks, checkpoints or application credentials are included. Publicly accessible data are not automatically licensed for transformation or redistribution.
+
+This independent implementation is separated from the original practice app and does not inherit its evaluation results, classifier or coordinate/angular scoring. Since v0.1.1 the distribution is `pose-reference-toolkit`, imports are `pose_reference`, and the CLI is `pose-ref`; use a fresh environment when migrating from the initial prototype.

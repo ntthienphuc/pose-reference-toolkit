@@ -1,11 +1,11 @@
 # Software metadata
 
-Metadata for Pose Reference Toolkit 0.1.2, following the C1–C8 fields in the SoftwareX original-software template (March 2026, version 6).
+Metadata for Pose Reference Toolkit 0.1.3, following the C1–C8 fields in the SoftwareX original-software template (March 2026, version 6).
 
 | Field | Description | Value |
 |---|---|---|
-| C1 | Current code version | 0.1.2 |
-| C2 | Permanent link to code/repository used for this version | [Version 0.1.2 source](https://github.com/ntthienphuc/pose-reference-toolkit/tree/v0.1.2) |
+| C1 | Current code version | 0.1.3 |
+| C2 | Permanent link to code/repository used for this version | [Version 0.1.3 source](https://github.com/ntthienphuc/pose-reference-toolkit/tree/v0.1.3) |
 | C3 | Legal code license | MIT; [LICENSE](../LICENSE) and [Licence.txt](../Licence.txt) contain identical terms. Third-party dependencies and supplied data retain their own rights. |
 | C4 | Code versioning system | Git |
 | C5 | Software languages, tools and services used | Python library and CLI; HTML, CSS and JavaScript browser demo; NumPy; optional FastAPI/Uvicorn server and MediaPipe/OpenCV extraction adapter; GitHub Actions CI. No hosted service is required to run the local toolkit. |

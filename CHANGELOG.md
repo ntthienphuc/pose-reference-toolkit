@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.3 — 2026-10-11
+
+- Download the complete current comparison receipt from the web demo, including reference, alignment, policy and feedback arrays.
+- Verify downloaded JSON against actual server responses and ensure a failed subsequent upload cannot expose stale feedback.
+- Redesign the README with a workflow diagram, synthetic demo screenshot, calibrated API example and evidence boundaries.
+- Add software positioning, primary-source comparisons and a natural-data case-study protocol.
+- Preserve scoring, bank schemas and policy behavior; this release adds review/export usability and documentation.
+
 ## 0.1.2 — 2026-10-09
 
 - Keep unreadable evaluation inputs in every requested sample-target comparison and rate denominator; report scoring coverage and conditional rates explicitly.

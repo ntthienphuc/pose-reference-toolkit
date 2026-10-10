@@ -1,6 +1,8 @@
 # Software paper plan and evidence ledger
 
-Working title: **Pose Reference Toolkit: Auditable pose reference banks and coherent geometric feedback for isolated sign practice**.
+Working title: **Pose Reference Toolkit: Reference-bank construction, temporal pose comparison and inspectable geometric feedback**.
+
+The 2026-10-11 review defines the complete contribution in [software positioning](SOFTWAREX_POSITIONING.md) and a staged [natural-data protocol](CASE_STUDY_PROTOCOL.md). Use those documents to freeze the case study before drafting stronger domain-performance claims.
 
 This is a writing/evidence plan, not a submitted or accepted paper. Check the current [SoftwareX author guide](https://www.sciencedirect.com/journal/softwarex/publish/guide-for-authors) and template before submission. The guide page returned HTTP 403 during the 2026-10-06 inspection, so exact current word limits and mandatory metadata are not asserted here.
 

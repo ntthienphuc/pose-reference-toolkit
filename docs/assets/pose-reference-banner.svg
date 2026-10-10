@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc">
+  <title id="title">Pose Reference Toolkit</title>
+  <desc id="desc">Construct a reference bank, align an attempt and inspect geometric feedback.</desc>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#0b172a"/><stop offset="1" stop-color="#143c4b"/></linearGradient>
+    <linearGradient id="line"><stop stop-color="#5eead4"/><stop offset="1" stop-color="#93c5fd"/></linearGradient>
+  </defs>
+  <rect width="1200" height="360" rx="20" fill="url(#bg)"/>
+  <g fill="none" stroke="#ffffff" opacity=".045"><path d="M0 60H1200M0 120H1200M0 180H1200M0 240H1200M0 300H1200M60 0V360M180 0V360M300 0V360M420 0V360M540 0V360M660 0V360M780 0V360M900 0V360M1020 0V360M1140 0V360"/></g>
+  <text x="48" y="66" fill="#5eead4" font-family="Segoe UI,Arial,sans-serif" font-size="15" letter-spacing="3">PYTHON LIBRARY / CLI / LOCAL WEB DEMO</text>
+  <text x="48" y="126" fill="#f1f5f9" font-family="Segoe UI,Arial,sans-serif" font-size="47" font-weight="700">Pose Reference Toolkit</text>
+  <text x="48" y="167" fill="#cbd5e1" font-family="Segoe UI,Arial,sans-serif" font-size="21">From reference collections to inspectable pose comparisons.</text>
+  <g font-family="Segoe UI,Arial,sans-serif" font-size="17" fill="#e2e8f0">
+    <rect x="48" y="214" width="194" height="54" rx="12" fill="#193747" stroke="#327267"/>
+    <text x="70" y="248">Build reference bank</text>
+    <rect x="292" y="214" width="183" height="54" rx="12" fill="#193747" stroke="#327267"/>
+    <text x="316" y="248">Align an attempt</text>
+    <rect x="525" y="214" width="181" height="54" rx="12" fill="#193747" stroke="#327267"/>
+    <text x="547" y="248">Inspect feedback</text>
+  </g>
+  <path d="M250 241H283M267 234L283 241L267 248M483 241H516M500 234L516 241L500 248" fill="none" stroke="#5eead4" stroke-width="2"/>
+  <text x="48" y="317" fill="#94a3b8" font-family="Segoe UI,Arial,sans-serif" font-size="16">Named joints · shared alignment · quality-aware outcomes · JSON receipts</text>
+  <g transform="translate(867 68)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M-34 46L34 46L69 5L104 30M-34 46L-73 91L-109 65M0 46V145L-43 220M0 145L53 211" stroke="#93c5fd" stroke-width="7" opacity=".55"/>
+    <path d="M-34 46L34 46L64 24L107 37M-34 46L-69 105L-109 75M0 46V145L-43 220M0 145L53 211" stroke="url(#line)" stroke-width="5"/>
+    <g fill="#5eead4" stroke="#0b172a" stroke-width="3"><circle cx="-34" cy="46" r="7"/><circle cx="34" cy="46" r="7"/><circle cx="64" cy="24" r="7"/><circle cx="107" cy="37" r="7"/><circle cx="-69" cy="105" r="7"/><circle cx="-109" cy="75" r="7"/><circle cx="0" cy="145" r="7"/></g>
+    <circle cx="0" cy="5" r="21" stroke="#cbd5e1" stroke-width="3"/>
+    <path d="M69 5L64 24M104 30L107 37M-73 91L-69 105" stroke="#fbbf24" stroke-width="2" stroke-dasharray="4 4"/>
+  </g>
+</svg>

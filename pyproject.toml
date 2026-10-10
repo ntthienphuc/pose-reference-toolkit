@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pose-reference-toolkit"
-version = "0.1.2"
-description = "Audited pose reference banks and coherent geometric feedback for isolated sign practice"
+version = "0.1.3"
+description = "Reference-bank construction, temporal pose comparison and inspectable geometric feedback"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
